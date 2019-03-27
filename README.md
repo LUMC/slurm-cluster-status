@@ -1,5 +1,5 @@
-slurm-snakemake
-===============
+slurm-cluster-status
+====================
 
 Little tool to be used as argument to Snakemake's `--cluster-status` 
 argument in a SLURM setting.
@@ -12,5 +12,9 @@ Output will be a string that is either:
 2. success
 3. failed
 
-  
+## Example
 
+```bash
+$ snakemake --cluster 'sbatch --parsable' \
+  --cluster-status './slurm-cluster-status.py'
+```
