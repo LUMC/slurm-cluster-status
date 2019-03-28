@@ -11,6 +11,7 @@ STATE_MAP = {
     "DEADLINE": "failed",
     "FAILED": "failed",
     "NODE_FAIL": "failed",
+    "OUT_OF_MEMORY": "failed",
     "PENDING": "running",
     "PREEMPTED": "failed",
     "RUNNING": "running",
