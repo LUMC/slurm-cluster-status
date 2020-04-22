@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import subprocess
+import time
 
 STATE_MAP = {
     "BOOT_FAIL": "failed",
@@ -21,11 +22,18 @@ STATE_MAP = {
 }
 
 
-def fetch_status(batch_id):
+def fetch_status(batch_id, attempts: int = 3, wait_time_seconds: float = 3):
     """fetch the status for the batch id"""
     sacct_args = ["sacct", "-j",  batch_id, "-o", "State", "--parsable2",
                   "--noheader"]
-    output = subprocess.check_output(sacct_args).decode("utf-8").strip()
+
+    for _ in range(attempts):
+        output = subprocess.check_output(sacct_args).decode("utf-8").strip()
+        if output:
+            break
+        time.sleep(wait_time_seconds)
+    else:
+        raise TimeoutError(f"Failed to get state for job id: {batch_id}.")
 
     # The first output is the state of the overall job
     # See
