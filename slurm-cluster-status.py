@@ -38,6 +38,11 @@ def fetch_status(batch_id):
     if job_status.startswith("CANCELLED by"):
         return "CANCELLED"
 
+    try:
+        status = STATE_MAP[job_status]
+    except KeyError:
+        raise NotImplementedError(f"Encountered unknown status {job_status} "
+                                  f"when parsing output:\n{output}")
     # Otherwise, return the status
     return job_status
 
@@ -48,5 +53,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     status = fetch_status(args.batch_id)
-
-    print(STATE_MAP[status])
+    print(status)
