@@ -18,22 +18,21 @@ STATE_MAP = {
     "RUNNING": "running",
     "RESIZING": "running",
     "SUSPENDED": "running",
-    "TIMEOUT": "failed"
+    "TIMEOUT": "failed",
+    "UNKNOWN": "running"
 }
 
 
-def fetch_status(batch_id, attempts: int = 3, wait_time_seconds: float = 3):
+def fetch_status(batch_id):
     """fetch the status for the batch id"""
     sacct_args = ["sacct", "-j",  batch_id, "-o", "State", "--parsable2",
                   "--noheader"]
 
-    for _ in range(attempts):
+    try:
         output = subprocess.check_output(sacct_args).decode("utf-8").strip()
-        if output:
-            break
-        time.sleep(wait_time_seconds)
-    else:
-        raise TimeoutError(f"Failed to get state for job id: {batch_id}.")
+    except Exception:
+        # If sacct fails for whatever reason, assume its temporary and return 'running'
+        output = 'UNKNOWN\n'
 
     # The first output is the state of the overall job
     # See
@@ -44,7 +43,7 @@ def fetch_status(batch_id, attempts: int = 3, wait_time_seconds: float = 3):
     # If the job was cancelled manually, it will say by who, e.g "CANCELLED by 12345"
     # We only care that it was cancelled
     if job_status.startswith("CANCELLED by"):
-        return "CANCELLED"
+        job_status = "CANCELLED"
 
     # Otherwise, return the status
     try:
