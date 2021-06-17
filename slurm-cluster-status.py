@@ -32,7 +32,7 @@ def fetch_status(batch_id):
         output = subprocess.check_output(sacct_args).decode("utf-8").strip()
     except Exception:
         # If sacct fails for whatever reason, assume its temporary and return 'running'
-        output = 'UNKNOWN\n'
+        output = 'UNKNOWN'
 
     # The first output is the state of the overall job
     # See
