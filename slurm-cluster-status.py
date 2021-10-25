@@ -34,6 +34,11 @@ def fetch_status(batch_id):
         # If sacct fails for whatever reason, assume its temporary and return 'running'
         output = 'UNKNOWN'
 
+    # Sometimes, sacct returns nothing, in which case we assume it is temporary
+    # and return 'running'
+    if not output:
+        output = 'UNKNOWN'
+
     # The first output is the state of the overall job
     # See
     # https://stackoverflow.com/questions/52447602/slurm-sacct-shows-batch-and-extern-job-names
@@ -49,8 +54,8 @@ def fetch_status(batch_id):
     try:
         return STATE_MAP[job_status]
     except KeyError:
-        raise NotImplementedError(f"Encountered unknown status {job_status} "
-                                  f"when parsing output:\n{output}")
+        raise NotImplementedError(f"Encountered unknown status '{job_status}' "
+                                  f"when parsing output:\n'{output}'")
 
 
 if __name__ == "__main__":
